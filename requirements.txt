@@ -1,0 +1,12 @@
+flask
+setuptools
+pandas
+prophet
+requests
+Flask-CORS
+python-dotenv
+flask-restx
+gunicorn
+celery
+redis
+Flask-Caching
