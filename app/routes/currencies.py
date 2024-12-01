@@ -1,14 +1,16 @@
-from flask import Blueprint, jsonify
+from flask_restx import Namespace, Resource
 from app.services.currency_service import get_supported_currencies
 from app.logger import setup_logger
 
 logger = setup_logger('currencies_route')
 
-currencies_bp = Blueprint('currencies_bp', __name__)
+api = Namespace('currencies', description='Currency operations')
 
-@currencies_bp.route('/currencies', methods=['GET'])
-def list_currencies():
-    currencies = get_supported_currencies()
-    if not currencies:
-        return jsonify({"error": "Aucune crypto-monnaie disponible"}), 500
-    return jsonify({"currencies": currencies}), 200
+@api.route('/')
+class CurrenciesList(Resource):
+    def get(self):
+        """List all supported cryptocurrencies"""
+        currencies = get_supported_currencies()
+        if not currencies:
+            return {"error": "Aucune crypto-monnaie disponible"}, 500
+        return {"currencies": currencies}, 200

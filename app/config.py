@@ -14,3 +14,6 @@ class Config:
     COINCAP_API_URL = 'https://api.coincap.io/v2/assets'
     COINCAP_HISTORY_URL = 'https://api.coincap.io/v2/assets/{currency}/history?interval=d1'
     PROPHET_PERIODS = 90
+    REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
+    REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+    CRYPTOCOMPARE_API_KEY = os.getenv('CRYPTOCOMPARE_API_KEY', '')
