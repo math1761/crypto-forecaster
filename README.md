@@ -1,170 +1,194 @@
-# 📈 Crypto Forecast API
+# Crypto Forecaster
 
-**Crypto Forecast API** is a Flask-based web API that predicts long-term cryptocurrency prices using [Facebook Prophet](https://facebook.github.io/prophet/). Whether you're looking to forecast Bitcoin, Ethereum, or any other cryptocurrency, this API has got you covered!
+A sophisticated cryptocurrency price prediction and analysis service that combines machine learning, technical analysis, and sentiment analysis to provide comprehensive market insights.
 
-## 🌟 Features
+## Features
 
-- **Predict Price Trends**: Generates forecasts for cryptocurrencies over the next 90 days.
-- **Multiple Cryptos**: Supports forecasting for a wide range of cryptocurrencies.
-- **Fast & Scalable**: Built using Flask and can be deployed with Docker, making it lightweight and scalable.
-- **Graphical Forecasts**: Generates and uploads prediction charts to AWS S3.
-- **RESTful API**: Easy-to-use API endpoints that return results in JSON format.
-  
-## 🚀 Getting Started
+### 1. Price Forecasting
+- Prophet-based time series forecasting
+- 90-day price predictions with confidence intervals
+- Backtesting with multiple validation periods
+- Dynamic model adjustments based on market conditions
+- Technical indicator integration for improved accuracy
+
+### 2. Advanced Sentiment Analysis
+- Multi-source news aggregation:
+  - Reddit (multiple cryptocurrency subreddits)
+  - CryptoPanic news aggregator
+  - CoinGecko updates and market data
+  - LunarCrush social metrics
+  - Messari crypto research
+- Sophisticated sentiment scoring:
+  - Time-weighted sentiment analysis
+  - Crypto-specific keyword recognition
+  - Trend detection and confidence scoring
+  - Social media engagement metrics
+
+### 3. Technical Analysis
+- Multiple timeframe analysis
+- Key technical indicators:
+  - Moving Averages (SMA, EMA)
+  - MACD (Moving Average Convergence Divergence)
+  - RSI (Relative Strength Index)
+  - Bollinger Bands
+  - Volume analysis
+- Trend strength measurement
+- Market condition detection
+
+### 4. Market Metrics
+- Price change analysis across multiple timeframes
+- Volume/Market cap analysis
+- Community engagement metrics
+- Social media trend analysis
+- Market sentiment indicators
+
+### 5. Real-time Updates
+- Automatic data refresh
+- Redis caching for performance
+- Configurable update intervals
+- Historical data analysis
+
+## Technology Stack
+
+- **Backend**: Python/Flask
+- **Machine Learning**: Prophet, scikit-learn
+- **Data Analysis**: pandas, numpy, ta
+- **Caching**: Redis
+- **Containerization**: Docker
+- **API Documentation**: Swagger/OpenAPI
+- **Cloud Storage**: AWS S3 (optional)
+
+## Setup and Installation
 
 ### Prerequisites
+- Docker and Docker Compose
+- Python 3.11+
+- Redis
 
-To get the project up and running, you'll need to have the following:
-
-- Python 3.8+
-- [pip](https://pip.pypa.io/en/stable/)
-- AWS credentials (for uploading forecast images to S3)
-
-### 🛠️ Installation
+### Local Development Setup
 
 1. Clone the repository:
+\`\`\`bash
+git clone [repository-url]
+cd crypto-forecaster
+\`\`\`
 
-    ```bash
-    git clone https://github.com/yourusername/crypto-forecast-api.git
-    cd crypto-forecast-api
-    ```
+2. Create and configure environment variables:
+\`\`\`bash
+cp .env.example .env
+# Edit .env with your configurations
+\`\`\`
 
-2. Set up your virtual environment and activate it:
+3. Start the development environment:
+\`\`\`bash
+docker-compose -f docker-compose.dev.yml up --build
+\`\`\`
 
-    ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate
-    ```
+4. Access the services:
+- API: http://localhost:5000
+- Swagger Documentation: http://localhost:5000/swagger
+- Redis Commander: http://localhost:8081
 
-3. Install dependencies:
+### Environment Variables
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+\`\`\`env
+FLASK_ENV=development
+FLASK_DEBUG=True
+REDIS_HOST=redis
+REDIS_PORT=6379
+S3_BUCKET=your-bucket-name
+S3_REGION=your-region
+S3_ACCESS_KEY=your-access-key
+S3_SECRET_KEY=your-secret-key
+\`\`\`
 
-4. Configure your environment variables. Create a `.env` file at the root of the project with the following:
+## API Endpoints
 
-    ```bash
-    S3_BUCKET=your-s3-bucket-name
-    S3_REGION=your-s3-region
-    S3_ACCESS_KEY=your-aws-access-key
-    S3_SECRET_KEY=your-aws-secret-key
-    ```
+### GET /forecast/
+Get cryptocurrency price forecasts with sentiment analysis
 
-### ⚙️ Usage
+Parameters:
+- \`currency\`: Cryptocurrency to analyze (e.g., bitcoin, ethereum, solana)
 
-Once the setup is complete, you can run the Flask server locally:
+Response includes:
+- Price forecasts for next 90 days
+- Confidence intervals
+- Sentiment analysis
+- Technical indicators
+- Market metrics
+- Backtesting results
 
-```bash
-flask run
-```
-
-### 🎯 API Endpoints
-
-#### 1. Get Supported Cryptocurrencies
-
-**Endpoint**: `/currencies`
-
-**Description**: Returns a list of all supported cryptocurrencies.
-
-**Requests**:
-
-```bash
-GET /currencies
-```
-
-**Response**:
-
-```bash
+Example response:
+\`\`\`json
 {
-  "currencies": [
-    "bitcoin",
-    "ethereum",
-    "ripple",
-    ...
-  ]
-}
-```
-
-#### 2. Predict Cryptocurrency Prices
-
-**Endpoint**: `/forecast`
-
-**Description**: Predicts the prices of the specified cryptocurrency for the next 90 days.
-
-**Request**:
-
-```bash
-GET /forecast?currency=bitcoin&currency=ethereum
-```
-
-**Parameters**:
-
-currency: (Optional) Specify one or more cryptocurrencies by their ID (e.g., bitcoin, ethereum). If no currency is provided, the API will use all supported cryptocurrencies.
-
-**Response**:
-
-```bash
-{
-  "forecasts": [
-    {
-      "currency": "bitcoin",
-      "forecast": [
-        {
-          "ds": "2024-12-01",
-          "yhat": 45000.12,
-          "yhat_lower": 44000.56,
-          "yhat_upper": 46000.91
-        },
-        {
-          "ds": "2024-12-02",
-          "yhat": 45500.34,
-          "yhat_lower": 44500.78,
-          "yhat_upper": 46500.67
-        },
-        ...
-      ],
-      "image_url": "https://your-bucket.s3.amazonaws.com/bitcoin_forecast_plot.png"
+  "forecasts": [{
+    "currency": "bitcoin",
+    "forecast": [...],
+    "backtest_metrics": {
+      "mape": 0.15,
+      "rmse": 1000.0,
+      "r2": 0.85,
+      "test_periods": 4
     },
-    {
-      "currency": "ethereum",
-      "forecast": [
-        {
-          "ds": "2024-12-01",
-          "yhat": 3000.12,
-          "yhat_lower": 2900.56,
-          "yhat_upper": 3100.91
+    "sentiment_analysis": {
+      "average_sentiment": 0.65,
+      "sentiment_trend": "improving",
+      "confidence": 0.8,
+      "news_count": 50,
+      "technical_bias": 0.3,
+      "market_sentiment": 0.4,
+      "detailed_metrics": {
+        "news_sentiment": 0.65,
+        "recent_sentiment": 0.7,
+        "technical_indicators": {
+          "bias": 0.3,
+          "confidence": 0.8
         },
-        ...
-      ],
-      "image_url": "https://your-bucket.s3.amazonaws.com/ethereum_forecast_plot.png"
+        "market_metrics": {
+          "sentiment": 0.4,
+          "confidence": 0.7
+        },
+        "sentiment_distribution": {
+          "positive": 30,
+          "neutral": 15,
+          "negative": 5
+        }
+      }
+    },
+    "forecast_metrics": {
+      "current_price": 35000.0,
+      "forecast_end_price": 42000.0,
+      "price_change_pct": 20.0,
+      "forecast_period_days": 90,
+      "trend": "uptrend",
+      "confidence_score": 0.85
     }
-  ]
+  }]
 }
-```
+\`\`\`
 
-### 🐳 Docker
+## Docker Support
 
-You can also run the app using Docker for a more portable solution:
+### Development Environment
+- Hot-reloading enabled
+- Debug mode
+- Redis Commander included
+- Volume mounting for live code updates
 
-1. Build the Docker image:
+### Production Environment
+- Optimized for performance
+- Redis persistence
+- Health checks
+- Automatic restarts
 
-    ```bash
-    docker build -t crypto-forecast-api .
-    ```
+## Contributing
 
-2. Run the container:
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-    ```bash
-    docker run -p 5000:5000 crypto-forecast-api
-    ```
+## License
 
-3. The app will be available at `http://localhost:5000`.
-
-### 🧪 Running Tests
-
-This project includes unit tests to ensure everything works as expected. To run the tests:
-
-```bash
-pytest
-```
+MIT License - see LICENSE file for details

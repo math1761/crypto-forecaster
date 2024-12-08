@@ -6,7 +6,21 @@ import io
 
 logger = setup_logger('s3_service')
 
+def is_s3_configured():
+    """Check if S3 credentials and bucket are configured"""
+    return all([
+        Config.S3_BUCKET,
+        Config.S3_REGION,
+        Config.S3_ACCESS_KEY,
+        Config.S3_SECRET_KEY
+    ])
+
 def upload_image_to_s3(image_buffer: io.BytesIO, filename: str) -> str:
+    """Upload image to S3 if configured, otherwise return None"""
+    if not is_s3_configured():
+        logger.info("S3 not configured, skipping image upload")
+        return None
+        
     s3_client = boto3.client(
         's3',
         region_name=Config.S3_REGION,
@@ -26,4 +40,4 @@ def upload_image_to_s3(image_buffer: io.BytesIO, filename: str) -> str:
         return img_url
     except ClientError as e:
         logger.error(f"S3 upload failed: {e}")
-        raise
+        return None
